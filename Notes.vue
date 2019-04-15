@@ -43,12 +43,12 @@
             <div class="modal-content">
                 <div class="modal-card-container">
                     <div class="modal-card-header">
-                        <input type="text" style="border:0px;" placeholder="Title" class="new-title">
+                        <input type="text" v-model="editedNoteTitle" style="border:0px;" placeholder="Title" class="new-title">
                     </div>
                     <hr>
                     <div class="modal-card-body">
                         <!-- <input type="text" v-model="newNoteBody" style="border:0px;" placeholder="Note" class="new-body"> -->
-                        <textarea v-model="editedNoteBody" ref="newnote" class="new-body" placeholder="Note" oninput='this.style.height = "";
+                        <textarea v-model="editedNoteBody" ref="editnote" class="new-body" placeholder="Note" oninput='this.style.height = "";
                             this.style.height = this.scrollHeight + "px"'></textarea>
                     </div>
                     <div class="modal-buttons">
@@ -71,10 +71,10 @@ export default({
             newNoteTitle: '',
             newNoteBody: '',
             isVisible: false,
-            height: 0,
             isEdited: false,
+            editedNoteTitle: '',
             editedNoteBody: '',
-            textt:'lslsls'
+            currIndex: null
 		};
 	},
 
@@ -102,18 +102,38 @@ export default({
             this.isVisible = false;
             this.newNoteBody = '';
             this.newNoteTitle = '';
-            this.height = 0;
         },
 
         editNote(index){
-            
-            this.newNoteBody = this.notes[index].body;
+            this.currIndex = index;
+            this.editedNoteBody = this.notes[index].body;
+            this.editedNoteTitle = this.notes[index].title;
             this.isEdited = true;
-            //this.notes[index].body
         },
 
         deleteNote(index){
             this.notes.splice(index, 1);
+        },
+
+        saveNote(){
+            if(this.editedNoteBody === '')
+                alert('Cannot save empty note');
+            else
+                if(this.editedNoteTitle === '')
+                    this.notes[this.currIndex] = {
+                        title: 'Untitled note',
+                        body: this.editedNoteBody,
+                        height: 'height: ' + this.$refs.editnote.style.height
+                    };
+                else
+                    this.notes[this.currIndex] = {
+                        title: this.editedNoteTitle,
+                        body: this.editedNoteBody,
+                        height: 'height: ' + this.$refs.editnote.style.height
+                    };
+            this.isEdited = false;
+            this.editedNoteBody = '';
+            this.editedNoteTitle = '';
         },
 
         closeModal(){
